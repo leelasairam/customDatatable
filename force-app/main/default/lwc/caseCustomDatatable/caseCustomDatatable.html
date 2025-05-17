@@ -1,0 +1,19 @@
+<template>
+    <lightning-card title="Cases">
+        <div style="width: auto;overflow-x: auto;">
+            <c-custom-datatable
+                key-field="Id"
+                data={cases} 
+                columns={cols}
+                oncellchange={handleCellChange}
+                onsave={handleSave}
+                draft-values={draftValues} >
+            </c-custom-datatable>
+        </div>
+    </lightning-card>
+
+    <!--Spinner-->
+    <div if:true={loading} class="slds-is-relative"> 
+            <lightning-spinner class="slds-is-fixed" alternative-text="Loading" size="medium"></lightning-spinner>
+        </div>
+</template>
