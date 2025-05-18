@@ -40,8 +40,11 @@ export default class caseCustomDatatable extends LightningElement {
             {label: 'Owner', fieldName: 'ownerName',type:'text',initialWidth:140},
             {label: 'Created', fieldName: 'CreatedDate',type:'date',initialWidth:120},
         ];
-    @track cases;
+    @track cases = [];
     @track draftValues=[];
+    rowLimit =20;
+    rowOffSet=0;
+    hideShowMoreButton = false;
 
     showToast(title,msg,varient) {
         const event = new ShowToastEvent({
@@ -54,12 +57,12 @@ export default class caseCustomDatatable extends LightningElement {
     }
 
     connectedCallback(){
-        this.getCases();
+        this.getCases(false);
     }
 
-    async getCases(){
+    async getCases(isShowMore){
         this.loading = true;
-        await fetchCases()
+        await fetchCases({limitSize:this.rowLimit,offsetSize:this.rowOffSet})
         .then(result=>{
             const temp = result.map(i=>({
                 ...i,
@@ -67,7 +70,16 @@ export default class caseCustomDatatable extends LightningElement {
                 statusOptions:this.statusOptions,
                 ownerName:i.Owner.Name,
             }));
-            this.cases = temp;
+            if(isShowMore){
+                this.cases = [...this.cases,...temp];
+                if(result.length<20){
+                    this.hideShowMoreButton = true;
+                    this.showToast('Last case set. No more cases to show','','info');
+                }
+            }
+            else{
+                this.cases = temp;
+            }
         })
         .catch(error=>{
             console.log(error);
@@ -98,7 +110,7 @@ export default class caseCustomDatatable extends LightningElement {
             this.draftValues = [];
             this.showToast('Case(s) updated successfully','','success');
             this.loading = false;
-            this.getCases();
+            this.getCases(false);
         }
         catch(error){
             this.showToast('Error',error.body.message,'error');
@@ -107,5 +119,10 @@ export default class caseCustomDatatable extends LightningElement {
         finally{
             this.loading = false;
         }
+    }
+
+    loadMoreData() {
+        this.rowOffSet = this.rowOffSet + this.rowLimit;
+        this.getCases(true);
     }
 }
