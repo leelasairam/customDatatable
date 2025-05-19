@@ -19,7 +19,7 @@ export default class caseCustomDatatable extends LightningElement {
     ]
 
     @track cols = [
-            {label: 'CaseNumber', fieldName: 'CaseNumber',type:'text',initialWidth:120},
+            {label: 'Case Number', fieldName: 'CaseNumber',type:'text',initialWidth:120},
             {label: 'Subject', fieldName: 'Subject', editable: true,initialWidth:240},
             {label: 'Priority', fieldName: 'Priority', type:'picklistColumn', editable: true,initialWidth:160,
 
@@ -110,6 +110,7 @@ export default class caseCustomDatatable extends LightningElement {
             this.draftValues = [];
             this.showToast('Case(s) updated successfully','','success');
             this.loading = false;
+            this.rowOffSet = 0;
             this.getCases(false);
         }
         catch(error){
